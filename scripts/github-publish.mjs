@@ -79,7 +79,7 @@ async function push(branch) {
       PROJECT_GITHUB_CREDENTIAL_FILE: process.env.PROJECT_GITHUB_CREDENTIAL_FILE,
       PROJECT_GITHUB_CREDENTIAL_KIND: process.env.PROJECT_GITHUB_CREDENTIAL_KIND,
       GIT_ASKPASS: path.join(root, 'scripts/github-askpass.cjs'), GIT_TERMINAL_PROMPT: '0',
-      GIT_TRACE: '0', GIT_TRACE_CURL: '0', GIT_CURL_VERBOSE: '0' },
+      GIT_TRACE: '0', GIT_TRACE_CURL: '0' },
   });
   let output = '';
   for (const stream of [child.stdout, child.stderr]) stream.on('data', chunk => { output += chunk.toString(); });
