@@ -1,0 +1,87 @@
+{
+  "app": "Blitz Learning",
+  "scope": "Synthetic adult math practice; no camera or microphone",
+  "startedAt": "2026-10-25T23:22:12.632Z",
+  "checks": {
+    "catalog": {
+      "passed": true
+    },
+    "providerConfigured": {
+      "passed": true
+    },
+    "threeDistinctCorrectEarnThreeStars": {
+      "passed": true
+    },
+    "replayRejected": {
+      "passed": true
+    },
+    "wrongResetsStreakButKeepsBest": {
+      "passed": true
+    },
+    "hintDisablesAward": {
+      "passed": true
+    },
+    "nonPondLiveHasNoPondTools": {
+      "passed": true
+    },
+    "argonHelpMarksCoached": {
+      "passed": true
+    },
+    "liveReceivesAudioAndTranscription": {
+      "passed": true
+    },
+    "liveUsesSelectedNonPondQuest": {
+      "passed": true
+    },
+    "liveCoachingDisablesStarsServerSide": {
+      "passed": true
+    },
+    "argonStructuredTutoring": {
+      "passed": true
+    },
+    "argonCannotAwardStars": {
+      "passed": true
+    }
+  },
+  "models": {
+    "reasoning": "gemini-4-argon",
+    "live": "gemini-3.8-live",
+    "tts": "gemini-3.8-flash-lite-tts"
+  },
+  "provider": {
+    "live": {
+      "status": "completed",
+      "model": "gemini-3.8-live",
+      "quest": "fractions",
+      "tutor": "pip",
+      "audioFormat": "PCM16 mono 24000Hz",
+      "pcmBytes": 647040,
+      "audioMessages": 38,
+      "transcriptionCharacters": 219,
+      "sceneEvents": 0,
+      "explicitStopAcknowledged": true,
+      "durationMs": 15487
+    },
+    "argon": {
+      "status": "completed",
+      "model": "gemini-4-argon",
+      "durationMs": 20055,
+      "observedStatuses": [
+        "queued",
+        "in_progress",
+        "completed"
+      ],
+      "resumptions": 0,
+      "structuredFields": [
+        "feedback",
+        "explanation",
+        "checkQuestion"
+      ],
+      "outputCharacters": 831
+    }
+  },
+  "status": "passed",
+  "completedAt": "2026-10-25T23:22:32.756Z",
+  "durationMs": 20124,
+  "pendingResumeStateRetained": false
+}

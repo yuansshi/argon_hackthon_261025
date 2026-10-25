@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="400" viewBox="0 0 640 400">
+  <rect width="640" height="400" fill="white"/>
+  <text x="50" y="75" font-family="Arial,sans-serif" font-size="26" fill="#1b3431">Synthetic math note — no person recorded</text>
+  <text x="90" y="185" font-family="Arial,sans-serif" font-size="70" fill="#102622">48 ÷ 6 = 8</text>
+  <text x="90" y="285" font-family="Arial,sans-serif" font-size="54" fill="#102622">8 × 2 = 16</text>
+</svg>

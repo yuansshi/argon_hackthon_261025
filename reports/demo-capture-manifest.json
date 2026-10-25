@@ -1,0 +1,21 @@
+{
+  "capture": "Actual browser viewport captures through computer-use tools",
+  "mode": "Controlled synthetic local practice; no live provider calls during the recording",
+  "rawFrames": 375,
+  "captureFramesPerSecond": 6,
+  "edit": "Remove raw frames 230 through 244, retaining the real three-star results dialog",
+  "publishedFramesBeforeFrameRateConversion": 360,
+  "publishedDurationSeconds": 60,
+  "outputFramesPerSecond": 30,
+  "resolution": "1280x720",
+  "audio": "Gemini 3.8 Flash-Lite TTS narration, normalized, with silence padded after 57.96 seconds",
+  "subtitles": "English selectable captions; approximate pause-aligned timings",
+  "chapters": [
+    { "start": 0, "end": 16.1667, "title": "Why active practice, generic subject hub" },
+    { "start": 16.1667, "end": 24, "title": "Choose a quest and an original tutor" },
+    { "start": 24, "end": 40.8333, "title": "Checked answers, streak reset, three stars" },
+    { "start": 40.8333, "end": 50.5, "title": "Gemini architecture" },
+    { "start": 50.5, "end": 60, "title": "Pending work and limits" }
+  ],
+  "privacy": "No private portrait, user account data, camera input, microphone input or learner media"
+}

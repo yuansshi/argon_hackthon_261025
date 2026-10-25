@@ -1,0 +1,15 @@
+node_modules
+runtime/
+.runtime/
+.env
+.env.*
+!.env.example
+*.log
+.DS_Store
+reports/capture-frames/
+reports/*.wav
+reports/*.webm
+reports/*interaction*.json
+reports/*credential*
+reports/gitlab-*.json
+demo/raw/

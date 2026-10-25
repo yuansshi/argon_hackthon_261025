@@ -1,0 +1,9 @@
+{
+  "subject": "Alex, an entirely fictional adult tutor, not a real presenter or the user",
+  "generation": "Codex built-in image generation, 2026-10-25",
+  "asset": "alex-photo-atlas.png",
+  "layout": "1536x1024, 3 columns x 2 rows, 6 photographic expression frames",
+  "animation": "WebGL localized pose crossfades driven by output-audio RMS and FFT bands, with separate blink mask",
+  "limits": "Approximate 2D facial animation, not filmed video, a 3D human mesh, or phoneme-exact lip sync",
+  "promptSummary": "Same fictional adult male math teacher in six consistently framed photographic mouth/blink poses, pale blue shirt, neutral studio background; no text or logos."
+}
