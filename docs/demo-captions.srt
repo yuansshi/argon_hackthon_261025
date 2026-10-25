@@ -1,0 +1,55 @@
+1
+00:00:00,275 --> 00:00:03,785
+Watching videos feels productive,
+until you try solving alone.
+
+2
+00:00:04,294 --> 00:00:10,227
+Blitz Learning is our engineering prototype
+turning passive video watching into active math practice.
+
+3
+00:00:10,817 --> 00:00:15,980
+On our neutral front door, future subjects say coming soon
+while math is playable now.
+
+4
+00:00:16,366 --> 00:00:18,794
+Learners pick a math quest, a problem,
+
+5
+00:00:18,985 --> 00:00:21,131
+and an original nonhuman tutor:
+
+6
+00:00:21,430 --> 00:00:23,754
+a robot, fox, or fantasy creature.
+
+7
+00:00:24,125 --> 00:00:28,979
+These real captured screens show controlled local practice,
+not live AI.
+
+8
+00:00:29,372 --> 00:00:32,864
+An offline deterministic checker
+grades numeric answers:
+
+9
+00:00:33,198 --> 00:00:36,028
+one to three consecutive correct fresh questions
+
+10
+00:00:36,317 --> 00:00:40,513
+earn one to three stars, and errors reset streaks,
+not best stars.
+
+11
+00:00:41,109 --> 00:00:50,244
+Next, our architecture pairs Gemini 4 Argon for explanations
+with Gemini Live for optional voice discussion and consented written work photos.
+
+12
+00:00:50,803 --> 00:00:57,613
+Our roadmap adds more subjects, outcome evaluation, privacy hardening,
+and explicit check ins, never facial tracking.

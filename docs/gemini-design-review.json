@@ -1,0 +1,87 @@
+{
+  "model": "gemini-4-argon",
+  "status": "completed",
+  "requestedSettings": {
+    "background": true,
+    "store": true,
+    "thinking_level": "high",
+    "max_output_tokens": 1000000
+  },
+  "completedAt": "2026-10-25T23:06:21.847Z",
+  "outputSource": "all model_output text parts",
+  "design": {
+    "concept": "Tactile editorial workbook meets playful studio. Warm paper tones, crisp Swiss grids, bold geometry, and ink-stamped cards replace generic dark-mode purple AI dashboards, keeping mathematical thinking front and center.",
+    "palette": {
+      "background": "#FBF8F3",
+      "ink": "#18221F",
+      "accent": "#E0533C"
+    },
+    "typography": "Newsreader serif for editorial headers and math story prompts; Plus Jakarta Sans for clean UI controls; JetBrains Mono with tabular numerals for equations and deterministic answer inputs.",
+    "homeLayout": [
+      "Top utility bar featuring the Blitz Learning wordmark, an offline-ready local engine badge, and cumulative stars earned.",
+      "Subject-neutral Bento grid where Mathematics is active and playable now, while Physics, Coding, and Music Theory display explicit 'Coming soon' pills.",
+      "Math Quest selector cards showing topic paths, problem counts, and locked-in best-star ratings from 0 to 3 stars.",
+      "Original nonhuman tutor selector featuring three custom vector companions: Brass Clockwork Robot, Origami Fox, and Astral Moss Creature."
+    ],
+    "learningLayout": [
+      "Primary workspace (70% width left/center): High-contrast paper card prioritizing the math prompt and SVG diagram, paired with a deterministic numeric input bar.",
+      "Dedicated companion rail (30% width right): Houses the nonhuman tutor, structured explanation steps, and an explicit opt-in 'Share Written Work' camera button; never overlaps prompts or diagrams.",
+      "Top progress strip: 3-node streak indicator for consecutive fresh answers alongside a persistent 'Best Stars' badge and gentle inactivity check-in prompt.",
+      "Bottom control bar: 'Check Answer' (offline deterministic verifier), 'Explain Step' (Gemini 4 Argon), and push-to-talk 'Discuss' (Gemini Live)."
+    ],
+    "questRewards": "A local deterministic checker is the sole authority on numeric answers and works fully offline. Solving 1, 2, or 3 consecutive fresh problems awards 1, 2, or 3 stars. A wrong attempt resets the current streak to zero without reducing best stars earned. AI explanation failures never invent grades or award stars.",
+    "tutorDirection": "Strictly original, clearly nonhuman 2D illustrated companions (robot, fox, fantasy creature) docked in the right rail so they never obscure equations or diagrams. No live humanlike or human anime agents, and no copyrighted franchises; human portraits appear only as small static historical stamps.",
+    "accessibility": [
+      "WCAG AAA high-contrast ink on warm paper (#18221F on #FBF8F3) with tabular numerals and generous line spacing.",
+      "Full keyboard operability, screen-reader MathML announcements, and text transcripts for all Gemini Live spoken interactions.",
+      "Explicit opt-in camera capture strictly for learner-shared written scratchwork; zero facial emotion, attention, identity, age, disability, or comprehension inference.",
+      "Re-engagement relies solely on explicit check-in buttons, answer activity, and idle timers."
+    ],
+    "microcopy": {
+      "hero": "Turn passive watching into active math practice.",
+      "subhead": "Choose a math quest, pick an original nonhuman guide, and build real problem-solving streaks at your own pace."
+    }
+  },
+  "demo": {
+    "narration": "Watching videos feels productive, until you try solving alone. Blitz Learning is our engineering prototype turning passive video watching into active math practice. On our neutral front door, future subjects say coming soon while math is playable now. Learners pick a math quest, a problem, and an original nonhuman tutor: a robot, fox, or fantasy creature. These real captured screens show controlled local practice, not live AI. An offline deterministic checker grades numeric answers: one to three consecutive correct fresh questions earn one to three stars, and errors reset streaks, not best stars. Next, our architecture pairs Gemini 4 Argon for explanations with Gemini Live for optional voice discussion and consented written work photos. Our roadmap adds more subjects, outcome evaluation, privacy hardening, and explicit check ins, never facial tracking.",
+    "beats": [
+      {
+        "start": 0,
+        "end": 8,
+        "screen": "Real captured app screen: Subject-neutral editorial home hub with playable Mathematics card and 'Coming soon' badges on Physics, Coding, and Music Theory.",
+        "message": "Introduce the Blitz Learning engineering prototype converting passive watching into active math practice from a subject-neutral front door."
+      },
+      {
+        "start": 8,
+        "end": 20,
+        "screen": "Real captured app screen: Picking a math quest, opening a geometry problem, and selecting the original Origami Fox tutor docked cleanly in the right rail.",
+        "message": "Show quest, problem, and nonhuman companion selection while keeping the math prompt and diagram unobstructed."
+      },
+      {
+        "start": 20,
+        "end": 36,
+        "screen": "Real captured app screen: Controlled local practice showing offline deterministic numeric checking, 1-to-3 star streak progression, and a wrong attempt resetting the streak but preserving best stars.",
+        "message": "Demonstrate offline deterministic grading authority, consecutive fresh question rewards, and honest capture of controlled local practice."
+      },
+      {
+        "start": 36,
+        "end": 49,
+        "screen": "Architecture diagram: Local deterministic checker isolated from Gemini 4 Argon reasoning, Gemini Live spoken multimodal discussion, and explicit opt-in scratchwork photo upload.",
+        "message": "Explain how Gemini 4 Argon and Gemini Live power explanations, voice chat, and shared written work without inventing grades or stars."
+      },
+      {
+        "start": 49,
+        "end": 60,
+        "screen": "Roadmap board: Upcoming subjects, learning outcome evaluation studies, deployment and privacy hardening, and timer/answer-based opt-in re-engagement check-ins.",
+        "message": "Close with an honest roadmap focused on outcome evaluation, privacy hardening, and explicit check-ins rather than facial attention inference."
+      }
+    ],
+    "claimsToAvoid": [
+      "Claiming proven learning gains, validated test-score improvements, or a finished production service.",
+      "Implying the captured UI screen recording itself is executing live Gemini AI calls during the controlled local practice demo.",
+      "Inferring or claiming to detect facial emotion, gaze, attention, identity, age, disability, or comprehension from camera input.",
+      "Allowing Gemini explanation failures or model outputs to grade numeric answers, award stars, or override the local deterministic checker.",
+      "Proposing live humanlike avatars, human anime agents, or copyrighted franchise characters."
+    ]
+  }
+}
