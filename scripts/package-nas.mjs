@@ -8,7 +8,7 @@ import { fileURLToPath } from 'node:url';
 import { buildPages } from './build-pages.mjs';
 
 const ROOT = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
-const TEMPLATES = ['compose.yaml', 'Caddyfile', 'proxy-site.Caddyfile', 'Dockerfile'];
+const TEMPLATES = ['compose.yaml', 'Caddyfile', 'proxy-site.Caddyfile', 'Dockerfile', '.dockerignore'];
 
 export function validateNasOptions({ bindIp, port, release } = {}) {
   if (typeof bindIp !== 'string' || !/^\d{1,3}(?:\.\d{1,3}){3}$/.test(bindIp)) throw new Error('BLITZ_NAS_BIND_IP must be an explicit private LAN IPv4 address.');
