@@ -1,6 +1,9 @@
 services:
   blitz-practice:
-    image: caddy:2.11.4-alpine
+    image: blitz-practice:@@RELEASE@@
+    build:
+      context: .
+      dockerfile: Dockerfile
     user: "1000:1000"
     restart: unless-stopped
     read_only: true
