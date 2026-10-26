@@ -1,6 +1,18 @@
 # NAS public practice deployment
 
-Target: **https://blitz.bespoke3d.ai/**. This serves the same browser-only practice as GitHub Pages: four math quests, original guides, authored hints, local stars, and the demo MP4. Gemini chat, microphone and camera stay disabled. No credential or Node.js relay belongs in this public container.
+Live: [Blitz Learning](https://blitz.bespoke3d.ai/). This serves the same browser-only practice as GitHub Pages: four math quests, original guides, authored hints, local stars, and the demo MP4. Gemini chat, microphone and camera stay disabled. No credential or Node.js relay belongs in this public container.
+
+## Verified deployment receipt
+
+Verified **2026-10-25 PDT**, using release `20261025-a7cef04`, source `a7cef04`, and immutable image `blitz-practice:20261025-a7cef04`:
+
+- Container healthy; all **119 offline tests pass**.
+- Public HTTPS has valid TLS and returns 200. All **19/19 public files** match the release manifest's byte counts and SHA-256 hashes.
+- JavaScript modules have the correct MIME type. The MP4 is `video/mp4`; a byte-range request returns **206** with matching content.
+- API routes and an unknown path return **404**. Security headers disable microphone/camera and outbound application connections; the public deployment has no Gemini backend.
+- Existing Bespoke, Bubble, Chores and Skywing public homepages all still return **200**. The empty-body Chores setup request remains denied with **403**.
+
+These checks describe the deployed release on that date, not a claim of continuous monitoring or production readiness. No learner camera or microphone was used for deployment verification.
 
 ## Prepare a release
 
@@ -40,10 +52,10 @@ The container runs unprivileged with a read-only filesystem, dropped capabilitie
 - Confirm Gemini controls remain disabled and no microphone/camera request appears. `/api/health` and arbitrary missing paths must return 404, not the home page.
 - Preserve the prior release until verification passes. To roll back, point the single proxy upstream at the previously verified service and validate/reload the shared proxy. Stop or remove only the failed Blitz service after confirming its exact identity; leave other NAS applications unchanged.
 
-This package prepares files; it does not configure DNS, upload to the NAS, start containers, modify the shared proxy, or establish that deployment succeeded. Record actual deployment and verification evidence separately. Stars remain browser-side practice achievements, not secure grading or proof of mastery.
+The package command only prepares files; it does not configure DNS, upload to the NAS, start containers or modify the shared proxy. The receipt above records the separately completed deployment and verification. Stars remain browser-side practice achievements, not secure grading or proof of mastery.
 
-## Caddy executable compatibility
+## Runtime compatibility lessons
 
 The first NAS attempt using the official binary directly failed before configuration parsing with `exec /usr/bin/caddy: operation not permitted`. That binary's privileged-port file capability conflicts with the deliberately empty capability bounding set. The release-specific copied binary avoids that capability request; its startup succeeded on the NAS without weakening runtime hardening.
 
-The next check returned HTTP 403: NAS archive extraction made the bind-mounted site directory root-owned with mode 700, so UID 1000 could not read it. The immutable image now includes public assets and configuration with explicit build-time permissions, removing both bind mounts. Leave NAS permissions and ACLs unchanged. Runtime `cap_drop: ALL`, `no-new-privileges`, the non-root user, read-only root and no-exec temporary mount stay in place. Do not solve either failure with extra capabilities or privileged mode. The new image still needs a fresh NAS build, container healthcheck and HTTPS verification; tests alone do not prove deployment succeeded.
+The next check returned HTTP 403: NAS archive extraction made the bind-mounted site directory root-owned with mode 700, so UID 1000 could not read it. The immutable image includes public assets and configuration with explicit build-time permissions, removing both bind mounts without changing NAS permissions or ACLs. Runtime `cap_drop: ALL`, `no-new-privileges`, the non-root user, read-only root and no-exec temporary mount remain enabled. The replacement image was built, passed its healthcheck, and was verified through public HTTPS as recorded above. Do not solve either failure with extra capabilities or privileged mode; offline tests alone cannot establish deployment success.

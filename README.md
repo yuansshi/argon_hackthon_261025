@@ -8,13 +8,13 @@ This is an **adult foundational-learning hackathon prototype**, not a production
 
 ## Try it on the web
 
-[Open the GitHub Pages practice demo](https://yuansshi.github.io/argon_hackthon_261025/).
+[Open Blitz Learning](https://blitz.bespoke3d.ai/) · [GitHub Pages mirror](https://yuansshi.github.io/argon_hackthon_261025/)
 
 The hosted site supports all four math quests, original tutor characters, authored hints, browser-checked answers, and best-star progress on your device. It also links to the 60-second demo. The static version uses the same authored math rules as the local app, but its browser-side achievements are not tamper-resistant or proof of mastery.
 
-**Gemini chat, voice, and camera are not available on GitHub Pages.** They need the local Node.js backend and a project-designated server-side credential. The hosted site never asks for an API key and makes no Gemini requests. See [Pages deployment](docs/PAGES.md).
+**Gemini chat, voice, and camera are unavailable on both hosted demos.** They need the local Node.js backend and a project-designated server-side credential. The public sites never ask for an API key or access your microphone/camera, and make no Gemini requests. See [Pages deployment](docs/PAGES.md).
 
-For the same public practice demo on a private NAS behind HTTPS, see [NAS deployment](docs/NAS.md). The prepared target is `https://blitz.bespoke3d.ai/`; deployment requires separate NAS and DNS verification.
+The NAS deployment is live and verified as of **2026-10-25 PDT**: valid TLS, all 19 public assets matching release hashes, video byte ranges returning 206, and unavailable API paths returning 404. Release `20261025-a7cef04` uses an immutable image from source `a7cef04`; all 119 offline tests pass. See the [deployment receipt and procedure](docs/NAS.md).
 
 ## Try it locally
 
@@ -68,7 +68,7 @@ Local practice does not call Google. Before AI help, the app asks for adult/clou
 
 Provider handling and retention depend on the Gemini project and [Google's terms](https://ai.google.dev/gemini-api/terms). Ending a session clears local state; it does not erase Google's records. Background Interactions require provider storage. No zero-retention promise is made.
 
-This prototype has no production authentication, accounts, verified age assurance, durable server progress, or publicly hosted AI backend. GitHub Pages hosts browser-only practice. An age checkbox is not a child-directed deployment solution. Any future child-facing use requires a provider and deployment that explicitly permit it. Do not expose the development server publicly.
+This prototype has no production authentication, accounts, verified age assurance, durable server progress, or publicly hosted AI backend. Both public deployments host browser-only practice. An age checkbox is not a child-directed deployment solution. Any future child-facing use requires a provider and deployment that explicitly permit it. Do not expose the development server publicly.
 
 ## Pending work
 
