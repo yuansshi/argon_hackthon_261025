@@ -8,7 +8,7 @@ import { fileURLToPath } from 'node:url';
 import { buildPages } from './build-pages.mjs';
 
 const ROOT = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
-const TEMPLATES = ['compose.yaml', 'Caddyfile', 'proxy-site.Caddyfile'];
+const TEMPLATES = ['compose.yaml', 'Caddyfile', 'proxy-site.Caddyfile', 'Dockerfile'];
 
 export function validateNasOptions({ bindIp, port, release } = {}) {
   if (typeof bindIp !== 'string' || !/^\d{1,3}(?:\.\d{1,3}){3}$/.test(bindIp)) throw new Error('BLITZ_NAS_BIND_IP must be an explicit private LAN IPv4 address.');
@@ -82,7 +82,7 @@ export async function packageNas(options = {}) {
     const template = path.join(ROOT, 'deploy/nas', filename);
     const info = await lstat(template);
     if (!info.isFile() || info.isSymbolicLink()) throw new Error('NAS templates must be ordinary source files.');
-    const content = (await readFile(template, 'utf8')).replaceAll('@@BIND_IP@@', bindIp).replaceAll('@@PORT@@', String(port));
+    const content = (await readFile(template, 'utf8')).replaceAll('@@BIND_IP@@', bindIp).replaceAll('@@PORT@@', String(port)).replaceAll('@@RELEASE@@', release);
     if (/@@[A-Z_]+@@/.test(content)) throw new Error('Unresolved NAS deployment template value.');
     const target = path.join(releaseRoot, filename);
     await writeFile(target, content, { mode: 0o644 });
@@ -90,7 +90,7 @@ export async function packageNas(options = {}) {
   }
   const files = await siteInventory(path.join(releaseRoot, 'site'));
   if (files.length !== fileCount) throw new Error('NAS site inventory count does not match its allowlisted build.');
-  await writeFile(path.join(releaseRoot, 'release.json'), `${JSON.stringify({ name, audience: 'public-static-practice', hostname: 'blitz.bespoke3d.ai', bindIp, port, fileCount, image: 'caddy:2.11.4-alpine', geminiEnabled: false, files }, null, 2)}\n`, { mode: 0o644 });
+  await writeFile(path.join(releaseRoot, 'release.json'), `${JSON.stringify({ name, audience: 'public-static-practice', hostname: 'blitz.bespoke3d.ai', bindIp, port, fileCount, image: `blitz-practice:${release}`, baseImage: 'caddy:2.11.4-alpine', geminiEnabled: false, files }, null, 2)}\n`, { mode: 0o644 });
   await readableTree(releaseRoot);
   await archiveRelease(staging, name, archive);
   return { archive, releaseRoot, name, fileCount };

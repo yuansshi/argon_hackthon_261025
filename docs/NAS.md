@@ -16,13 +16,15 @@ node scripts/package-nas.mjs
 
 Replace all three placeholders. The tool rejects public/wildcard/loopback IPs, unsafe release labels, and privileged ports. It builds a fresh allowlisted static site and writes `.runtime/blitz-RELEASE.tar.gz`. An existing archive is never replaced. Staging directories remain in `.runtime/` for inspection.
 
-The archive contains one `blitz-RELEASE/` directory: `site/`, `compose.yaml`, `Caddyfile`, `proxy-site.Caddyfile`, and `release.json`. The manifest records every public site's file path, byte count, and SHA-256 digest for deployment verification. The archive contains no dependencies, backend, credential helpers, API keys, original lecture, or private learner media. The build runs locally and is architecture-neutral; the NAS uses the established official `caddy:2.11.4-alpine` image without building an image.
+The archive contains one `blitz-RELEASE/` directory: `site/`, `compose.yaml`, `Caddyfile`, `proxy-site.Caddyfile`, `Dockerfile`, and `release.json`. The manifest records each public file's path, byte count, and SHA-256 digest for deployment verification. The archive contains no dependencies, backend, credential helpers, API keys, original lecture, or private learner media. Static assets build locally and are architecture-neutral.
+
+The NAS builds a minimal local `blitz-practice:RELEASE` image from the established official `caddy:2.11.4-alpine` image. It only copies Caddy to a fresh executable inode, without preserving file-capability xattrs; it installs no packages or application dependencies. If `getcap` is available, the build asserts that the copied binary has no file capabilities. The new entrypoint runs that copied binary as UID/GID 1000. This retains the strict runtime security settings and uses unprivileged port 8080.
 
 ## Deploy through the NAS GUI
 
 1. Upload and extract into a dedicated versioned deployment folder, away from other applications. Confirm the extracted `compose.yaml` sits next to `Caddyfile` and `site/`.
 2. Check permissions: container UID/GID `1000:1000` must read the files and traverse their directories. GUI extraction ownership varies. Do not solve a permission failure with privileged mode or world-write access.
-3. Create a Compose application from that release folder. The relative mounts resolve only inside this release; mount `site/` and `Caddyfile` read-only. Do not add host-root, Docker-socket, credential or shared proxy mounts.
+3. Create a Compose application from that release folder and build its release-specific local image. The build context is only this public release. The relative mounts resolve only inside this release; mount `site/` and `Caddyfile` read-only. Do not add host-root, Docker-socket, credential or shared proxy mounts.
 4. Verify the private `IP:PORT` serves the expected HTML, JS modules and video. Direct private HTTP tests can check files, but browser quests require a secure context and must be tested through HTTPS.
 5. Add only the generated `proxy-site.Caddyfile` site block to the existing shared Caddy configuration. Preserve all other sites and global settings. Back up its current configuration, validate the complete configuration, then reload it using the NAS's established workflow.
 6. Create the `blitz.bespoke3d.ai` DNS record using the same ingress convention as existing sites. The shared proxy handles TLS; the inner static service listens privately on port 8080. The site snippet disables HTTP ACME challenges to match the existing TLS-ALPN path; it does not change other sites.
@@ -39,3 +41,7 @@ The container runs unprivileged with a read-only filesystem, dropped capabilitie
 - Preserve the prior release until verification passes. To roll back, point the single proxy upstream at the previously verified service and validate/reload the shared proxy. Stop or remove only the failed Blitz service after confirming its exact identity; leave other NAS applications unchanged.
 
 This package prepares files; it does not configure DNS, upload to the NAS, start containers, modify the shared proxy, or establish that deployment succeeded. Record actual deployment and verification evidence separately. Stars remain browser-side practice achievements, not secure grading or proof of mastery.
+
+## Caddy executable compatibility
+
+The first NAS attempt using the official binary directly failed before configuration parsing with `exec /usr/bin/caddy: operation not permitted`. That binary's privileged-port file capability conflicts with the deliberately empty capability bounding set. The release-specific copied binary avoids that capability request; runtime `cap_drop: ALL`, `no-new-privileges`, the non-root user, read-only root and no-exec temporary mount stay in place. Do not fix this failure by granting capabilities or privileged mode. This packaging fix still requires a fresh NAS image build, container healthcheck and HTTPS verification; tests alone do not prove the NAS deployment succeeded.
