@@ -1,4 +1,4 @@
-// GitHub Pages practice stays in this tab: no requests, credentials or media storage.
+// Hosted practice stays in this tab: no requests, credentials or media storage.
 const SESSION_TTL = 2 * 60 * 60 * 1000;
 const POST_ROUTES = new Set(['/api/blitz/session', '/api/blitz/answer', '/api/blitz/hint', '/api/blitz/tutor-selection', '/api/blitz/session/end']);
 const CLOUD_ROUTES = new Set(['/api/blitz/tutor', '/api/live', '/api/session', '/api/tutor', '/api/speech', '/api/transcribe']);
@@ -35,7 +35,7 @@ export function createPracticeApi(engine) {
       return copy({ ...engine.questCatalog(), models: { reasoning: null, live: null, tts: null, liveAvailable: false }, staticPractice: true,
         audience: 'Adults 18+', achievements: 'Three consecutive distinct, unhinted correct answers earn three stars. This public practice demo checks answers in your browser, not on a secure server.' });
     }
-    if (CLOUD_ROUTES.has(path) || /^\/api\/jobs\/[^/?]+(?:\/resume)?$/.test(path)) fail(503, 'Gemini conversations, voice and camera sharing are unavailable on GitHub Pages. Local practice and authored hints still work.');
+    if (CLOUD_ROUTES.has(path) || /^\/api\/jobs\/[^/?]+(?:\/resume)?$/.test(path)) fail(503, 'Gemini conversations, voice and camera sharing are unavailable in this hosted demo. Local practice and authored hints still work.');
     if (!POST_ROUTES.has(path)) fail(404, 'This practice route is unavailable.');
     body = requestBody(body);
     if (path === '/api/blitz/session') {

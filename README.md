@@ -14,6 +14,8 @@ The hosted site supports all four math quests, original tutor characters, author
 
 **Gemini chat, voice, and camera are not available on GitHub Pages.** They need the local Node.js backend and a project-designated server-side credential. The hosted site never asks for an API key and makes no Gemini requests. See [Pages deployment](docs/PAGES.md).
 
+For the same public practice demo on a private NAS behind HTTPS, see [NAS deployment](docs/NAS.md). The prepared target is `https://blitz.bespoke3d.ai/`; deployment requires separate NAS and DNS verification.
+
 ## Try it locally
 
 Requires Node.js 22 or newer.

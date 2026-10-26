@@ -1,0 +1,23 @@
+{
+	auto_https off
+	admin off
+	persist_config off
+}
+
+:8080 {
+	root * /srv
+	header {
+		X-Content-Type-Options nosniff
+		Referrer-Policy no-referrer
+		X-Frame-Options DENY
+		Permissions-Policy "camera=(), microphone=(), geolocation=()"
+		Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; media-src 'self' blob:; connect-src 'none'; worker-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'; form-action 'self'"
+		Cache-Control "no-cache"
+		-Server
+	}
+	@api path /api /api/*
+	respond @api 404
+	@hidden path /.git* /.env* /.runtime* /node_modules/* /server.mjs /credentials.mjs
+	respond @hidden 404
+	file_server
+}
