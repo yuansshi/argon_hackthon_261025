@@ -96,7 +96,7 @@ export class PondStage {
   }
 
   async _initialize() {
-    const THREE = await import('/vendor/three/build/three.module.js');
+    const THREE = await import('./vendor/three/build/three.module.js');
     if (this.disposed) return false;
     this.THREE = THREE;
     this.renderer = new THREE.WebGLRenderer({ canvas: this.canvas, antialias: true, alpha: false, powerPreference: 'high-performance' });
