@@ -17,9 +17,6 @@ services:
       XDG_DATA_HOME: /tmp/data
     ports:
       - "@@BIND_IP@@:@@PORT@@:8080"
-    volumes:
-      - ./Caddyfile:/etc/caddy/Caddyfile:ro
-      - ./site:/srv:ro
     tmpfs:
       - /tmp:rw,noexec,nosuid,size=16m,mode=1777
     mem_limit: 128m

@@ -27,7 +27,7 @@ test('NAS package requires a private host, unprivileged port and safe explicit r
 });
 
 test('NAS runtime is isolated static Caddy with no backend, keys, broad bind or host mounts', async () => {
-  const compose = await read('compose.yaml'), caddy = await read('Caddyfile'), proxy = await read('proxy-site.Caddyfile'), dockerfile = await read('Dockerfile');
+  const compose = await read('compose.yaml'), caddy = await read('Caddyfile'), proxy = await read('proxy-site.Caddyfile'), dockerfile = await read('Dockerfile'), dockerignore = await read('.dockerignore');
   assert.match(compose, /image: blitz-practice:@@RELEASE@@/);
   assert.match(compose, /build:\s+context: \.\s+dockerfile: Dockerfile/);
   assert.match(compose, /user: "1000:1000"/);
@@ -35,12 +35,19 @@ test('NAS runtime is isolated static Caddy with no backend, keys, broad bind or 
   assert.match(compose, /cap_drop:\s*\n\s*- ALL/);
   assert.match(compose, /no-new-privileges:true/);
   assert.match(compose, /"@@BIND_IP@@:@@PORT@@:8080"/);
-  assert.match(compose, /.\/site:\/srv:ro/);
+  assert.doesNotMatch(compose, /volumes:|\/srv:|\/etc\/caddy\/Caddyfile:/);
   for (const control of ['mem_limit:', 'cpus:', 'pids_limit:', 'max-size:', 'max-file:', 'tmpfs:']) assert.ok(compose.includes(control));
   assert.match(compose, /test: \["CMD", "wget", "-q", "-O", "\/dev\/null", "http:\/\/127\.0\.0\.1:8080\/"\]/);
   assert.match(compose, /interval: 30s\s+timeout: 3s\s+retries: 3\s+start_period: 5s/);
   assert.doesNotMatch(compose, /privileged:|network_mode:|env_file:|docker\.sock|0\.0\.0\.0|GEMINI|access_info|node_modules|server\.mjs/);
   assert.match(dockerfile, /^FROM caddy:2\.11\.4-alpine$/m);
+  assert.match(dockerfile, /^COPY site\/ \/srv\/$/m);
+  assert.match(dockerfile, /^COPY Caddyfile \/etc\/caddy\/Caddyfile$/m);
+  assert.match(dockerfile, /find \/srv -type d -exec chmod 0755 \{\} \\;/);
+  assert.match(dockerfile, /find \/srv -type f -exec chmod 0644 \{\} \\;/);
+  assert.match(dockerfile, /chmod 0644 \/etc\/caddy\/Caddyfile/);
+  assert.ok(dockerfile.indexOf('COPY site/') < dockerfile.indexOf('USER 1000:1000'));
+  assert.equal(dockerignore, '**\n!Dockerfile\n!Caddyfile\n!site/\n!site/**\n');
   assert.match(dockerfile, /RUN cp \/usr\/bin\/caddy \/usr\/bin\/blitz-caddy/);
   assert.match(dockerfile, /chmod 0755 \/usr\/bin\/blitz-caddy/);
   assert.match(dockerfile, /test -z "\$\(getcap \/usr\/bin\/blitz-caddy\)"/);
@@ -62,7 +69,7 @@ test('NAS archive contains only the static allowlist and rendered release files,
   const { stdout } = await exec('tar', ['-tzf', result.archive]);
   const files = stdout.trim().split('\n').filter(name => !name.endsWith('/')).map(name => name.replace(`${result.name}/`, '')).sort();
   const site = [...PUBLIC_FILES, 'quest-engine.js', '.nojekyll', 'vendor/three/build/three.module.js', 'vendor/three/build/three.core.js', 'vendor/three/LICENSE', 'demo/blitz-learning-60s.mp4'];
-  assert.deepEqual(files, ['compose.yaml', 'Caddyfile', 'proxy-site.Caddyfile', 'Dockerfile', 'release.json', ...site.map(name => `site/${name}`)].sort());
+  assert.deepEqual(files, ['compose.yaml', 'Caddyfile', 'proxy-site.Caddyfile', 'Dockerfile', '.dockerignore', 'release.json', ...site.map(name => `site/${name}`)].sort());
   assert.equal(result.fileCount, site.length);
   const compose = await readFile(path.join(result.releaseRoot, 'compose.yaml'), 'utf8');
   assert.match(compose, /"192\.168\.50\.20:18080:8080"/);
