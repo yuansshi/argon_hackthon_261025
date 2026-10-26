@@ -119,7 +119,7 @@ test('Pages rejects unavailable cloud routes without fetching or requesting came
   try {
     const api = createPracticeApi(engine), session = await start(api, { cloudConsent: true });
     for (const route of ['/api/blitz/tutor', '/api/live', '/api/session', '/api/tutor', '/api/speech', '/api/transcribe', '/api/jobs/fake', '/api/jobs/fake/resume']) {
-      await assert.rejects(api(route, { sessionId: session.sessionId, message: 'Help', cloudConsent: true }), error => error.status === 503 && /unavailable on GitHub Pages/.test(error.message));
+      await assert.rejects(api(route, { sessionId: session.sessionId, message: 'Help', cloudConsent: true }), error => error.status === 503 && /unavailable in this hosted demo/.test(error.message));
     }
     for (const route of ['/api/unknown', '//api/blitz/catalog', '/api/blitz/answer?x=1', null, {}, 'https://example.invalid/api/health']) await assert.rejects(api(route), status(404));
     const result = await api('/api/blitz/answer', { sessionId: session.sessionId, questionId: session.question.id, answer: '10' });

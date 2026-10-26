@@ -1,0 +1,9 @@
+# Add only this site block to the existing shared proxy. Keep its other sites.
+blitz.bespoke3d.ai {
+	tls {
+		issuer acme {
+			disable_http_challenge
+		}
+	}
+	reverse_proxy @@BIND_IP@@:@@PORT@@
+}

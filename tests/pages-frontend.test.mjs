@@ -45,7 +45,7 @@ test('static cloud, microphone, camera, and Live entry points return before read
 });
 
 test('Pages capabilities are visibly explained on home and lesson, not tooltip-only', () => {
-  assert.match(html, /id="pages-home-notice"[\s\S]*?GitHub Pages practice demo/);
+  assert.match(html, /id="pages-home-notice"[\s\S]*?Hosted practice demo/);
   assert.match(html, /id="pages-lesson-notice"[\s\S]*?AI chat, voice, and camera require the local Node app/);
   assert.match(html, /id="pages-ai-note"[\s\S]*?Ask tutor and Gemini voice are unavailable/);
   assert.match(app, /setAttribute\('aria-describedby', 'pages-ai-note'\)/);

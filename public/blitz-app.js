@@ -50,7 +50,7 @@ function controls() {
   $('connect-tutor').disabled = STATIC_PRACTICE || locked || state.connecting || !state.liveAvailable;
   $('connect-tutor').hidden = state.connected;
   $('connect-tutor').textContent = STATIC_PRACTICE ? 'Gemini voice · local app only' : state.connecting ? 'Connecting…' : state.liveAvailable ? 'Talk with Gemini' : 'Voice unavailable';
-  $('connect-tutor').title = STATIC_PRACTICE ? 'GitHub Pages hosts practice only. Use the local Node app for Gemini.' : state.liveAvailable ? 'Start an optional Gemini Live conversation' : 'Configure project Gemini access to enable live voice. Local practice is available.';
+  $('connect-tutor').title = STATIC_PRACTICE ? 'This hosted demo offers practice only. Use the local Node app for Gemini.' : state.liveAvailable ? 'Start an optional Gemini Live conversation' : 'Configure project Gemini access to enable live voice. Local practice is available.';
   $('media-controls').hidden = !state.connected;
   $('mic-button').disabled = !microphone.enabled && (!state.connected || state.micBusy || locked);
   $('camera-button').disabled = !state.cameraStream && (!state.connected || state.cameraBusy || locked);
@@ -215,7 +215,7 @@ async function home() {
   await endSession(); pondStage?.setPaused(true); $('lesson-view').hidden = true; $('home-view').hidden = false; renderQuests(); window.scrollTo({ top: 0 }); $('home-title').tabIndex = -1; $('home-title').focus();
 }
 function requestCloud(action) {
-  if (STATIC_PRACTICE) { showError('Gemini chat, voice, and camera require the local Node app. Hints and answer checking work in this Pages demo.'); return; }
+  if (STATIC_PRACTICE) { showError('Gemini chat, voice, and camera require the local Node app. Hints and answer checking work in this hosted demo.'); return; }
   if (!state.session || state.busy || state.jobPending || state.nextQuestion || state.completed) return;
   if (action === 'reasoning' && !state.reasoningAvailable) { showError('Gemini explanations are not configured. Set up project Gemini access and reload; local practice and hints still work.'); return; }
   state.pendingCloudAction = action; $('cloud-consent').checked = false; $('start-live').disabled = true;
@@ -380,7 +380,7 @@ async function loadCatalog() {
     state.catalog = await api('/api/blitz/catalog'); if (!Array.isArray(state.catalog.quests) || !Array.isArray(state.catalog.tutors)) throw new Error('The quest catalogue is incomplete. Retry loading it.');
     renderQuests(); renderTutors(); $('catalog-status').hidden = true;
     const health = await api('/api/health'); state.liveAvailable = !STATIC_PRACTICE && Boolean(health.liveAvailable); state.reasoningAvailable = !STATIC_PRACTICE && Boolean(health.configured);
-    setLiveStatus(STATIC_PRACTICE ? 'Gemini chat, voice, and camera are unavailable on GitHub Pages. Practice and authored hints work here.' : state.liveAvailable ? 'Optional voice and camera. Both start off.' : 'Live voice is not configured. Local practice still works; Ask tutor needs project Gemini access.'); controls();
+    setLiveStatus(STATIC_PRACTICE ? 'Gemini chat, voice, and camera are unavailable in this hosted demo. Practice and authored hints work here.' : state.liveAvailable ? 'Optional voice and camera. Both start off.' : 'Live voice is not configured. Local practice still works; Ask tutor needs project Gemini access.'); controls();
   } catch (error) { $('catalog-status').textContent = error.message; $('retry-catalog').hidden = false; }
 }
 
@@ -416,12 +416,12 @@ if (STATIC_PRACTICE) {
   $('pages-home-notice').hidden = false; $('pages-lesson-notice').hidden = false; $('pages-ai-note').hidden = false;
   $('ask-button').setAttribute('aria-describedby', 'pages-ai-note'); $('connect-tutor').setAttribute('aria-describedby', 'pages-ai-note');
   $('answer-label').textContent = 'Your answer';
-  document.querySelector('#quest-dialog .privacy-note').textContent = 'Answers are checked in your browser, not sent to an AI service. This GitHub Pages demo has no Gemini connection.';
-  $('home-privacy').textContent = 'This GitHub Pages practice demo is an experimental learning tool for adults 18+. Answers stay in this browser; only aggregate best-star counts are saved on this device.';
+  document.querySelector('#quest-dialog .privacy-note').textContent = 'Answers are checked in your browser, not sent to an AI service. This hosted demo has no Gemini connection.';
+  $('home-privacy').textContent = 'This hosted practice demo is an experimental learning tool for adults 18+. Answers stay in this browser; only aggregate best-star counts are saved on this device.';
   $('reasoning-capability').textContent = 'Local Node app only · Gemini Argon';
   $('live-capability').textContent = 'Local Node app only · Gemini Live';
-  $('reasoning-description').textContent = 'In the local Node app, Gemini Argon can explain a step or explore your reasoning. This capability is not available on GitHub Pages.';
-  $('live-description').textContent = 'The local Node app supports spoken discussion and optional camera sharing of written work. GitHub Pages does not connect to Gemini or request your microphone or camera.';
+  $('reasoning-description').textContent = 'In the local Node app, Gemini Argon can explain a step or explore your reasoning. This capability is not available in this hosted demo.';
+  $('live-description').textContent = 'The local Node app supports spoken discussion and optional camera sharing of written work. This hosted demo does not connect to Gemini or request your microphone or camera.';
   $('tutor-caption').textContent = 'Try an answer or choose an authored hint. I’m an illustrated practice guide here, not a live AI conversation.';
 }
 await loadCatalog();
