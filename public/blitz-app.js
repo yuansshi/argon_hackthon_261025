@@ -5,6 +5,12 @@ import { appendDelta, shortCaption, maySendMedia } from './studio-state.js';
 import { PROGRESS_KEY, cleanProgress, mergeBestStars, starsMarkup, questArtwork, mathVisual } from './blitz-state.js';
 
 const $ = id => document.getElementById(id);
+// Only the Pages build adds this marker. A failed local backend never silently
+// changes a Gemini lesson into a static practice session.
+const STATIC_PRACTICE = document.querySelector('meta[name="blitz-deployment"]')?.content === 'static-practice';
+const staticApi = STATIC_PRACTICE
+  ? Promise.all([import('./practice-api.js'), import('./quest-engine.js')]).then(([{ createPracticeApi }, engine]) => createPracticeApi(engine))
+  : null;
 const state = { catalog: null, tutorId: 'pip', session: null, question: null, progress: null, nextQuestion: null, completed: false, busy: false, best: {}, requestEpoch: 0, jobEpoch: 0, jobId: null, jobPending: false, pendingCloudAction: null, socket: null, liveEpoch: 0, connecting: false, connected: false, liveAvailable: false, reasoningAvailable: false, cameraStream: null, cameraEpoch: 0, cameraAck: false, cameraBusy: false, micBusy: false, captureBusy: false, cameraTimer: null, lastFrame: -Infinity, caption: '', heard: '', newTurn: true, suppressed: false };
 try { state.best = cleanProgress(JSON.parse(localStorage.getItem(PROGRESS_KEY) || '{}')); } catch { state.best = {}; }
 const avatar = new TutorAvatar($('active-avatar'), state.tutorId);
@@ -17,6 +23,7 @@ function showError(message = '', id = 'lesson-error') { $(id).textContent = mess
 function tutor() { return state.catalog?.tutors.find(item => item.id === state.tutorId); }
 function tutorKind(item) { return ({ alex: 'Static AI portrait', nova: 'Astral explorer', pip: 'Robot guide', sage: 'Thoughtful fox' })[item.id] || item.kind; }
 async function api(path, body, options = {}) {
+  if (STATIC_PRACTICE) return (await staticApi)(path, body);
   const controller = new AbortController(), timeout = setTimeout(() => controller.abort(), 20000);
   try {
     const response = await fetch(path, { ...(body ? { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) } : {}), ...options, signal: controller.signal });
@@ -36,14 +43,14 @@ function controls() {
   $('answer-input').disabled = locked;
   $('check-answer').disabled = locked;
   $('hint-button').disabled = locked;
-  $('ask-button').disabled = locked;
+  $('ask-button').disabled = locked || STATIC_PRACTICE;
   $('next-question').hidden = !answered;
   $('next-question').disabled = state.busy;
   $('next-question').firstChild.textContent = state.completed ? 'See your results ' : 'Next question ';
-  $('connect-tutor').disabled = locked || state.connecting || !state.liveAvailable;
+  $('connect-tutor').disabled = STATIC_PRACTICE || locked || state.connecting || !state.liveAvailable;
   $('connect-tutor').hidden = state.connected;
-  $('connect-tutor').textContent = state.connecting ? 'Connecting…' : state.liveAvailable ? 'Talk with Gemini' : 'Voice unavailable';
-  $('connect-tutor').title = state.liveAvailable ? 'Start an optional Gemini Live conversation' : 'Configure project Gemini access to enable live voice. Local practice is available.';
+  $('connect-tutor').textContent = STATIC_PRACTICE ? 'Gemini voice · local app only' : state.connecting ? 'Connecting…' : state.liveAvailable ? 'Talk with Gemini' : 'Voice unavailable';
+  $('connect-tutor').title = STATIC_PRACTICE ? 'GitHub Pages hosts practice only. Use the local Node app for Gemini.' : state.liveAvailable ? 'Start an optional Gemini Live conversation' : 'Configure project Gemini access to enable live voice. Local practice is available.';
   $('media-controls').hidden = !state.connected;
   $('mic-button').disabled = !microphone.enabled && (!state.connected || state.micBusy || locked);
   $('camera-button').disabled = !state.cameraStream && (!state.connected || state.cameraBusy || locked);
@@ -53,7 +60,7 @@ function controls() {
   $('camera-button').setAttribute('aria-label', state.cameraStream ? 'Stop sharing camera' : 'Share written work with Gemini using camera');
   $('camera-preview').hidden = !state.cameraStream;
   $('live-indicator').classList.toggle('connected', state.connected);
-  $('live-indicator').textContent = state.connected ? 'Gemini Live connected' : state.connecting ? 'Connecting…' : state.jobPending ? 'Gemini is thinking…' : 'Ready to help';
+  $('live-indicator').textContent = STATIC_PRACTICE ? 'Authored practice guide' : state.connected ? 'Gemini Live connected' : state.connecting ? 'Connecting…' : state.jobPending ? 'Gemini is thinking…' : 'Ready to help';
   $('change-tutor').disabled = state.jobPending || state.busy || state.connecting;
   document.querySelectorAll('.tutor-option').forEach(button => { button.disabled = state.jobPending || state.busy || state.connecting; });
   $('check-answer').firstChild.textContent = state.connected ? 'Send to tutor ' : 'Check answer ';
@@ -208,6 +215,7 @@ async function home() {
   await endSession(); pondStage?.setPaused(true); $('lesson-view').hidden = true; $('home-view').hidden = false; renderQuests(); window.scrollTo({ top: 0 }); $('home-title').tabIndex = -1; $('home-title').focus();
 }
 function requestCloud(action) {
+  if (STATIC_PRACTICE) { showError('Gemini chat, voice, and camera require the local Node app. Hints and answer checking work in this Pages demo.'); return; }
   if (!state.session || state.busy || state.jobPending || state.nextQuestion || state.completed) return;
   if (action === 'reasoning' && !state.reasoningAvailable) { showError('Gemini explanations are not configured. Set up project Gemini access and reload; local practice and hints still work.'); return; }
   state.pendingCloudAction = action; $('cloud-consent').checked = false; $('start-live').disabled = true;
@@ -215,12 +223,14 @@ function requestCloud(action) {
   showError('', 'cloud-error'); $('cloud-dialog').showModal();
 }
 async function confirmCloud() {
+  if (STATIC_PRACTICE) return;
   if (!$('cloud-consent').checked) return;
   const action = state.pendingCloudAction; $('cloud-dialog').close();
   if (action === 'reasoning') await askReasoning(); else await startLive();
 }
 const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
 async function askReasoning() {
+  if (STATIC_PRACTICE) return;
   if (!state.session || state.jobPending || state.busy) return;
   const epoch = ++state.jobEpoch, sessionId = state.session.sessionId, questionId = state.question.id;
   const message = $('answer-input').value.trim() || 'Help me understand the first step without giving away the final answer. Ask me one useful check question.';
@@ -257,8 +267,8 @@ async function askReasoning() {
   finally { if (epoch === state.jobEpoch) { state.jobPending = false; controls(); } }
 }
 
-function socketSend(message) { if (state.socket?.readyState !== WebSocket.OPEN) return false; state.socket.send(JSON.stringify(message)); return true; }
-function canSendMedia() { return maySendMedia({ connected: state.connected, providerReady: state.connected, hidden: document.hidden, socketOpen: state.socket?.readyState === WebSocket.OPEN, bufferedAmount: state.socket?.bufferedAmount }); }
+function socketSend(message) { if (STATIC_PRACTICE || state.socket?.readyState !== WebSocket.OPEN) return false; state.socket.send(JSON.stringify(message)); return true; }
+function canSendMedia() { return !STATIC_PRACTICE && maySendMedia({ connected: state.connected, providerReady: state.connected, hidden: document.hidden, socketOpen: state.socket?.readyState === WebSocket.OPEN, bufferedAmount: state.socket?.bufferedAmount }); }
 async function stopCamera() {
   state.cameraEpoch++; clearInterval(state.cameraTimer); state.cameraTimer = null;
   for (const track of state.cameraStream?.getTracks() || []) track.stop();
@@ -280,6 +290,7 @@ async function endLive(message = 'Camera and microphone are off.') {
   $('heard').textContent = ''; $('heard').hidden = true; setLiveStatus(message); controls(); await socketClosed;
 }
 async function startLive() {
+  if (STATIC_PRACTICE) return;
   if (!state.session || state.connecting || state.connected || !state.liveAvailable) return;
   const epoch = ++state.liveEpoch;
   state.connecting = true; controls(); showError(); setLiveStatus('Connecting to Gemini Live…');
@@ -316,6 +327,7 @@ async function handleLive(message, epoch) {
   if (message.type === 'turn-complete') { state.newTurn = true; state.heard = ''; }
 }
 async function enableMicrophone() {
+  if (STATIC_PRACTICE) return;
   if (!state.connected || state.micBusy) return;
   const epoch = state.liveEpoch; state.micBusy = true; controls(); showError();
   try {
@@ -335,6 +347,7 @@ function waitCameraConsent() {
   });
 }
 async function enableCamera() {
+  if (STATIC_PRACTICE) return;
   if (!state.connected || state.cameraBusy) return;
   if (!navigator.mediaDevices?.getUserMedia) { showError('Camera is unavailable in this browser. Type or speak instead.'); return; }
   const epoch = ++state.cameraEpoch, liveEpoch = state.liveEpoch; state.cameraBusy = true; controls(); showError();
@@ -366,8 +379,8 @@ async function loadCatalog() {
   try {
     state.catalog = await api('/api/blitz/catalog'); if (!Array.isArray(state.catalog.quests) || !Array.isArray(state.catalog.tutors)) throw new Error('The quest catalogue is incomplete. Retry loading it.');
     renderQuests(); renderTutors(); $('catalog-status').hidden = true;
-    const health = await api('/api/health'); state.liveAvailable = Boolean(health.liveAvailable); state.reasoningAvailable = Boolean(health.configured);
-    setLiveStatus(state.liveAvailable ? 'Optional voice and camera. Both start off.' : 'Live voice is not configured. Local practice still works; Ask tutor needs project Gemini access.'); controls();
+    const health = await api('/api/health'); state.liveAvailable = !STATIC_PRACTICE && Boolean(health.liveAvailable); state.reasoningAvailable = !STATIC_PRACTICE && Boolean(health.configured);
+    setLiveStatus(STATIC_PRACTICE ? 'Gemini chat, voice, and camera are unavailable on GitHub Pages. Practice and authored hints work here.' : state.liveAvailable ? 'Optional voice and camera. Both start off.' : 'Live voice is not configured. Local practice still works; Ask tutor needs project Gemini access.'); controls();
   } catch (error) { $('catalog-status').textContent = error.message; $('retry-catalog').hidden = false; }
 }
 
@@ -396,7 +409,19 @@ $('end-button').addEventListener('click', () => endLive('Conversation ended. Cam
 $('answer-input').addEventListener('beforeinput', () => { if (speaker.playing) { speaker.stop(); avatar.stop(); socketSend({ type:'interrupt' }); } });
 document.addEventListener('visibilitychange', () => { pondStage?.setPaused(document.hidden || $('lesson-view').hidden); avatar.setPaused(document.hidden); if (document.hidden && (state.connected || state.connecting || state.cameraStream || microphone.enabled)) endLive('Paused while the tab was hidden. Camera and microphone released.'); });
 document.addEventListener('keydown', event => { if (event.key === 'Escape' && (state.connected || state.connecting)) endLive('Conversation stopped. Camera and microphone released.'); });
-window.addEventListener('pagehide', () => { state.requestEpoch++; state.jobEpoch++; state.liveEpoch++; socketSend({ type:'stop' }); state.socket?.close(); microphone.stop(); stopCamera(); speaker.dispose(); avatar.dispose(); pondStage?.dispose(); if (state.session) fetch('/api/blitz/session/end',{ method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({sessionId:state.session.sessionId}),keepalive:true }).catch(() => {}); });
+window.addEventListener('pagehide', () => { state.requestEpoch++; state.jobEpoch++; state.liveEpoch++; socketSend({ type:'stop' }); state.socket?.close(); microphone.stop(); stopCamera(); speaker.dispose(); avatar.dispose(); pondStage?.dispose(); if (state.session) api('/api/blitz/session/end', {sessionId:state.session.sessionId}, {keepalive:true}).catch(() => {}); });
 window.addEventListener('pageshow', event => { if (event.persisted) location.reload(); });
 $('adult-consent').checked = false; $('cloud-consent').checked = false;
+if (STATIC_PRACTICE) {
+  $('pages-home-notice').hidden = false; $('pages-lesson-notice').hidden = false; $('pages-ai-note').hidden = false;
+  $('ask-button').setAttribute('aria-describedby', 'pages-ai-note'); $('connect-tutor').setAttribute('aria-describedby', 'pages-ai-note');
+  $('answer-label').textContent = 'Your answer';
+  document.querySelector('#quest-dialog .privacy-note').textContent = 'Answers are checked in your browser, not sent to an AI service. This GitHub Pages demo has no Gemini connection.';
+  $('home-privacy').textContent = 'This GitHub Pages practice demo is an experimental learning tool for adults 18+. Answers stay in this browser; only aggregate best-star counts are saved on this device.';
+  $('reasoning-capability').textContent = 'Local Node app only · Gemini Argon';
+  $('live-capability').textContent = 'Local Node app only · Gemini Live';
+  $('reasoning-description').textContent = 'In the local Node app, Gemini Argon can explain a step or explore your reasoning. This capability is not available on GitHub Pages.';
+  $('live-description').textContent = 'The local Node app supports spoken discussion and optional camera sharing of written work. GitHub Pages does not connect to Gemini or request your microphone or camera.';
+  $('tutor-caption').textContent = 'Try an answer or choose an authored hint. I’m an illustrated practice guide here, not a live AI conversation.';
+}
 await loadCatalog();

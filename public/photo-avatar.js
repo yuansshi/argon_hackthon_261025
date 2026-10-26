@@ -107,7 +107,7 @@ export class PhotoAvatar {
       this.loaded = true;
     };
     this.image.onerror = () => { canvas.dataset.renderer = 'asset-unavailable'; };
-    this.image.src = '/assets/alex-photo-atlas.png';
+    this.image.src = new URL('./assets/alex-photo-atlas.png', import.meta.url).href;
     this.observer = new ResizeObserver(() => this.resize());
     this.observer.observe(canvas);
     this.resize();

@@ -89,7 +89,7 @@ export class Microphone {
     let context;
     try {
       context = new AudioContext({ sampleRate: 16000 });
-      await context.audioWorklet.addModule('/input-worklet.js');
+      await context.audioWorklet.addModule(new URL('./input-worklet.js', import.meta.url));
       if (epoch !== this.epoch) { release(); await context.close(); return false; }
       this.stream = stream; this.context = context;
       this.source = context.createMediaStreamSource(stream);
